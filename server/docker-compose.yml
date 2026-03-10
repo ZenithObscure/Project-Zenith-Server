@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  zenith-account-server:
+    build: .
+    image: zenith-account-server:latest
+    container_name: zenith-account-server
+    ports:
+      - "${ZENITH_PORT:-3000}:3000"
+    environment:
+      ZENITH_HOST: "0.0.0.0"
+      ZENITH_PORT: "3000"
+      ZENITH_JWT_SECRET: "${ZENITH_JWT_SECRET:-change-me-in-production}"
+      ZENITH_DB_PATH: "/app/data/zenith_accounts.db"
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
