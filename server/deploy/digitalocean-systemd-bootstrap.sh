@@ -85,7 +85,10 @@ if ! id "$SERVICE_USER" &>/dev/null; then
   useradd --system --no-create-home --shell /bin/false "$SERVICE_USER"
 fi
 mkdir -p "$DATA_DIR"
+mkdir -p "$DATA_DIR/.config"
+mkdir -p "$DATA_DIR/.pub-cache"
 chown "$SERVICE_USER:$SERVICE_USER" "$DATA_DIR"
+chown -R "$SERVICE_USER:$SERVICE_USER" "$DATA_DIR/.config" "$DATA_DIR/.pub-cache"
 
 echo "[6/8] Install dependencies"
 cd "$SERVER_DIR"

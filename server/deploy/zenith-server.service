@@ -10,6 +10,10 @@ RestartSec=10
 User=zenith
 WorkingDirectory=/opt/zenith-server
 EnvironmentFile=/opt/zenith-server/.env
+Environment=HOME=/var/lib/zenith
+Environment=XDG_CONFIG_HOME=/var/lib/zenith/.config
+Environment=PUB_CACHE=/var/lib/zenith/.pub-cache
+Environment=DART_SUPPRESS_ANALYTICS=true
 ExecStart=/usr/lib/dart/bin/dart run bin/server.dart
 
 # Security hardening
