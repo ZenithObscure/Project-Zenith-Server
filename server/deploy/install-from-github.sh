@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Clone Zenith server code from GitHub and run bootstrap on a DigitalOcean droplet.
+# Clone Zenith server code from GitHub and run systemd bootstrap on a DigitalOcean droplet.
 #
 # Usage examples:
 #   sudo bash install-from-github.sh --repo owner/repo --branch main --no-tls
@@ -10,6 +10,7 @@ set -euo pipefail
 # Notes:
 # - Supports server code at repo root OR repo path: server/
 # - This script clones repo to /opt/zenith-src and syncs /opt/zenith-server
+# - Uses systemd service instead of Docker
 
 REPO=""
 BRANCH="main"
@@ -71,12 +72,12 @@ rm -rf "$SRC_DIR"
 git clone --depth 1 --branch "$BRANCH" "$REPO" "$SRC_DIR"
 
 SERVER_SRC_DIR=""
-if [[ -f "$SRC_DIR/docker-compose.yml" ]]; then
+if [[ -f "$SRC_DIR/pubspec.yaml" ]]; then
   SERVER_SRC_DIR="$SRC_DIR"
-elif [[ -f "$SRC_DIR/server/docker-compose.yml" ]]; then
+elif [[ -f "$SRC_DIR/server/pubspec.yaml" ]]; then
   SERVER_SRC_DIR="$SRC_DIR/server"
 else
-  echo "Could not find docker-compose.yml in repo root or server/ subdirectory."
+  echo "Could not find pubspec.yaml in repo root or server/ subdirectory."
   exit 1
 fi
 
@@ -84,16 +85,16 @@ echo "[3/5] Sync server files"
 mkdir -p "$APP_DIR"
 rsync -az --delete "$SERVER_SRC_DIR/" "$APP_DIR/"
 
-if [[ ! -x "$APP_DIR/deploy/digitalocean-bootstrap.sh" ]]; then
-  chmod +x "$APP_DIR/deploy/digitalocean-bootstrap.sh"
+if [[ ! -x "$APP_DIR/deploy/digitalocean-systemd-bootstrap.sh" ]]; then
+  chmod +x "$APP_DIR/deploy/digitalocean-systemd-bootstrap.sh"
 fi
 
 echo "[4/5] Run bootstrap"
 cd "$APP_DIR"
 if [[ "$NO_TLS" == "true" ]]; then
-  bash deploy/digitalocean-bootstrap.sh --no-tls
+  bash deploy/digitalocean-systemd-bootstrap.sh --no-tls
 else
-  bash deploy/digitalocean-bootstrap.sh --domain "$DOMAIN" --email "$EMAIL"
+  bash deploy/digitalocean-systemd-bootstrap.sh --domain "$DOMAIN" --email "$EMAIL"
 fi
 
 echo "[5/5] Done"

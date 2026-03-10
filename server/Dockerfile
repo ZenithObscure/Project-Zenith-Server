@@ -2,7 +2,7 @@
 # Build: docker build -t zenith-account-server .
 # Run: docker run -p 3000:3000 -e ZENITH_JWT_SECRET=your-secret zenith-account-server
 
-FROM google/dart:latest
+FROM dart:stable
 
 WORKDIR /app
 

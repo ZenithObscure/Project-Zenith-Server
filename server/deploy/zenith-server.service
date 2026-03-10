@@ -1,0 +1,24 @@
+[Unit]
+Description=Zenith Account Server
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=10
+User=zenith
+WorkingDirectory=/opt/zenith-server
+EnvironmentFile=/opt/zenith-server/.env
+ExecStart=/usr/lib/dart/bin/dart run bin/server.dart
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/zenith-server
+ReadWritePaths=/var/lib/zenith
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,12 @@
+# Dart/Flutter build artifacts
+.dart_tool/
+.packages
+pubspec.lock
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Environment files with secrets
+.env
