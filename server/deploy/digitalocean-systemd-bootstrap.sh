@@ -89,10 +89,16 @@ mkdir -p "$DATA_DIR/.config"
 mkdir -p "$DATA_DIR/.pub-cache"
 chown "$SERVICE_USER:$SERVICE_USER" "$DATA_DIR"
 chown -R "$SERVICE_USER:$SERVICE_USER" "$DATA_DIR/.config" "$DATA_DIR/.pub-cache"
+chown -R "$SERVICE_USER:$SERVICE_USER" "$SERVER_DIR"
 
 echo "[6/8] Install dependencies"
 cd "$SERVER_DIR"
-/usr/lib/dart/bin/dart pub get
+sudo -u "$SERVICE_USER" \
+  HOME="$DATA_DIR" \
+  XDG_CONFIG_HOME="$DATA_DIR/.config" \
+  PUB_CACHE="$DATA_DIR/.pub-cache" \
+  DART_SUPPRESS_ANALYTICS=true \
+  /usr/lib/dart/bin/dart pub get
 
 echo "[7/8] Configure environment"
 if [[ ! -f "$SERVER_DIR/.env" ]]; then
@@ -113,7 +119,6 @@ fi
 
 echo "[8/8] Install and start systemd service"
 cp "$SCRIPT_DIR/zenith-server.service" /etc/systemd/system/
-chown "$SERVICE_USER:$SERVICE_USER" "$SERVER_DIR" -R
 systemctl daemon-reload
 systemctl enable zenith-server
 systemctl restart zenith-server
